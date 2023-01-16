@@ -42,8 +42,6 @@ views_to_plot = {'Thermal Model (PLINE03T)',      'pline03t'
                  'Thermal Model (HRC CEA)',       '2ceahvpt'
 };
 
-% views_to_plot = {'Thermal Model (PLINE03T)',      'pline03t'
-%                  'Thermal Model (PLINE04T)',      'pline04t'};
              
 % Directory to save the plot images and text files
 if (ispc)
@@ -111,8 +109,8 @@ for i=1:length(views_to_plot)
 
     if ~isempty(this_view_ind)
 
-        num_plots = num_plots + 1
-    
+        num_plots = num_plots + 1;
+
         % Select this view and execute the callback
         set(handles.plotView,'value',this_view_ind);
         disp(['Plotting ' this_view '...']);
@@ -147,8 +145,6 @@ end
 msgbox(['Finished plotting and outputting ' ...
          num2str(num_plots) ' views.']);
 
-
-     
 
 function [X,m]=getscreen(varargin)
 %GETSCREEN replacement for GETFRAME for systems with multiple monitors. Use it just like you use GETFRAME.
