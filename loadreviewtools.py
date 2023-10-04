@@ -28,7 +28,6 @@ from tempfile import TemporaryDirectory
 
 class LoadReviewTools(object):
     def __init__(self, propschedule, reviewschedule=None):
-
         self.fileparts = {
             "psmc": "_1pdeaat_plot.txt",
             "dpa": "_dpa_plot.txt",
@@ -85,7 +84,15 @@ class LoadReviewTools(object):
             },
             "tank": {
                 "columns": 7,
-                "names": ["Time", "PFTANK2T", "PFTANKIP", "PF0TANK2T", "Pitch", "Roll", "Sun_Body_Y"],
+                "names": [
+                    "Time",
+                    "PFTANK2T",
+                    "PFTANKIP",
+                    "PF0TANK2T",
+                    "Pitch",
+                    "Roll",
+                    "Sun_Body_Y",
+                ],
                 "title": "Spacecraft: Fuel Tank",
             },
             "aca": {
@@ -94,8 +101,20 @@ class LoadReviewTools(object):
                 "title": "Spacecraft: Aspect Camera",
             },
             "mups": {
-                "columns": 6,
-                "names": ["Time", "PM1THV2T", "PM1THV2T_0", "PM2THV1T", "PM2THV1T_0", "PM2THV1T_1"],
+                "columns": 11,
+                "names": [
+                    "Time",
+                    "PM1THV2T",
+                    "PM1THV2T_0",
+                    "PM2THV1T",
+                    "PM1THV2T Thruster State",
+                    "PM2THV1T Thruster State",
+                    "PM3THV2T Thruster State",
+                    "PM4THV2T Thruster State",
+                    "AOPCADSE_21",
+                    "PM2THV1T_0",
+                    "PM2THV1T_1",
+                ],
                 "title": "Spacecraft: MUPS Valves",
             },
             "cc": {
@@ -231,7 +250,19 @@ class LoadReviewTools(object):
             "Within_Limit",
         ]
 
-        self.plotorder = ["oba", "tank", "mups", "psmc", "dpa", "dea", "aca", "pline03t", "pline04t", "acisfp"]
+        self.plotorder = [
+            "oba",
+            "tank",
+            "mups",
+            "psmc",
+            "dpa",
+            "dea",
+            "aca",
+            "pline03t",
+            "pline04t",
+            "acisfp",
+            "hrc",
+        ]
 
         self.propschedule = propschedule
         self.reviewschedule = reviewschedule
@@ -242,7 +273,6 @@ class LoadReviewTools(object):
             self.writeChecklistData()
 
     def _readfile(self, filename, subheaderinfo):
-
         # Headerinfo should be a sub-dict of the original header info,
         # including only the information for the current model
 
@@ -253,19 +283,51 @@ class LoadReviewTools(object):
         header = datalines.pop(0)
 
         data = {}
-
         for num, name in enumerate(subheaderinfo["names"]):
-            if name.lower() in ["time", "si", "within_limit", "15v", "24v", "hrci", "hrcs", "shield", "5v_a", "5v_b"]:
-                data.update(dict({name: np.array([line.strip().split()[num] for line in datalines])}))
-            # elif name.lower() in ['si', 'Within_Limit']:
-            #     data.update(dict( { name:np.array( [np.double(line.strip().split()[num]) for line in datalines]) } ))
+            if name.lower() in [
+                "time",
+                "si",
+                "within_limit",
+                "15v",
+                "24v",
+                "hrci",
+                "hrcs",
+                "shield",
+                "5v_a",
+                "5v_b",
+                "pm1thv2t thruster state",
+                "pm2thv1t thruster state",
+                "pm3thv2t thruster state",
+                "pm4thv2t thruster state",
+                "aopcadse_21",
+            ]:
+
+                data.update(
+                    dict(
+                        {
+                            name: np.array(
+                                [line.strip().split()[num] for line in datalines]
+                            )
+                        }
+                    )
+                )
             else:
-                data.update(dict({name: np.array([np.double(line.strip().split()[num]) for line in datalines])}))
+                data.update(
+                    dict(
+                        {
+                            name: np.array(
+                                [
+                                    np.double(line.strip().split()[num])
+                                    for line in datalines
+                                ]
+                            )
+                        }
+                    )
+                )
 
         return data
 
     def _writeReportData(self, outfile, propdata, reviewdata, names, modelname):
-
         # The 'names' list should not include time
 
         outfile.write(("-" * 79) + "\n")
@@ -278,7 +340,23 @@ class LoadReviewTools(object):
         outfile.write("Start:    %s\n" % (propdata["Time"][0]))
 
         for name in names:
-            if name.lower() in ["time", "si", "within_limit", "15v", "24v", "hrci", "hrcs", "shield", "5v_a", "5v_b"]:
+            if name.lower() in [
+                "time",
+                "si",
+                "within_limit",
+                "15v",
+                "24v",
+                "hrci",
+                "hrcs",
+                "shield",
+                "5v_a",
+                "5v_b",
+                "pm1thv2t thruster state",
+                "pm2thv1t thruster state",
+                "pm3thv2t thruster state",
+                "pm4thv2t thruster state",
+                "aopcadse_21",
+            ]:
                 outfile.write("    %s: %s\n" % (name, propdata[name][0]))
             else:
                 outfile.write("    %s: %f\n" % (name, propdata[name][0]))
@@ -289,7 +367,23 @@ class LoadReviewTools(object):
         outfile.write("Start:    %s\n" % (reviewdata["Time"][0]))
 
         for name in names:
-            if name.lower() in ["time", "si", "within_limit", "15v", "24v", "hrci", "hrcs", "shield", "5v_a", "5v_b"]:
+            if name.lower() in [
+                "time",
+                "si",
+                "within_limit",
+                "15v",
+                "24v",
+                "hrci",
+                "hrcs",
+                "shield",
+                "5v_a",
+                "5v_b",
+                "pm1thv2t thruster state",
+                "pm2thv1t thruster state",
+                "pm3thv2t thruster state",
+                "pm4thv2t thruster state",
+                "aopcadse_21",
+            ]:
                 outfile.write("    %s: %s\n" % (name, reviewdata[name][0]))
             else:
                 outfile.write("    %s: %f\n" % (name, reviewdata[name][0]))
@@ -307,9 +401,29 @@ class LoadReviewTools(object):
                 "shield",
                 "5v_a",
                 "5v_b",
+                "pm1thv2t thruster state",
+                "pm2thv1t thruster state",
+                "pm3thv2t thruster state",
+                "pm4thv2t thruster state",
+                "aopcadse_21",
             ]:
-                maxind = np.nanargmax(reviewdata[name])
-                outfile.write("    %s: %f  (%s)\n" % (name, reviewdata[name][maxind], reviewdata["Time"][maxind]))
+                if name.lower() in ["2ceahvpt", "cea0", "cea1"]:
+                    hrc_on = np.array(reviewdata["15V"]) == b"On"
+                    maxind = np.nanargmax(reviewdata[name][hrc_on])
+                    outfile.write(
+                        "    %s while 15v==On: %f  (%s)\n"
+                        % (
+                            name,
+                            reviewdata[name][hrc_on][maxind],
+                            reviewdata["Time"][hrc_on][maxind],
+                        )
+                    )
+                else:
+                    maxind = np.nanargmax(reviewdata[name])
+                    outfile.write(
+                        "    %s: %f  (%s)\n"
+                        % (name, reviewdata[name][maxind], reviewdata["Time"][maxind])
+                    )
 
         outfile.write("\nMin Values:\n")
         for name in names:
@@ -324,13 +438,37 @@ class LoadReviewTools(object):
                 "shield",
                 "5v_a",
                 "5v_b",
+                "pm1thv2t thruster state",
+                "pm2thv1t thruster state",
+                "pm3thv2t thruster state",
+                "pm4thv2t thruster state",
+                "aopcadse_21",
             ]:
                 minind = np.nanargmin(reviewdata[name])
-                outfile.write("    %s: %f  (%s)\n" % (name, reviewdata[name][minind], reviewdata["Time"][minind]))
+                outfile.write(
+                    "    %s: %f  (%s)\n"
+                    % (name, reviewdata[name][minind], reviewdata["Time"][minind])
+                )
 
         outfile.write("\nEnd: %s\n" % (reviewdata["Time"][-1]))
         for name in names:
-            if name.lower() in ["time", "si", "within_limit", "15v", "24v", "hrci", "hrcs", "shield", "5v_a", "5v_b"]:
+            if name.lower() in [
+                "time",
+                "si",
+                "within_limit",
+                "15v",
+                "24v",
+                "hrci",
+                "hrcs",
+                "shield",
+                "5v_a",
+                "5v_b",
+                "pm1thv2t thruster state",
+                "pm2thv1t thruster state",
+                "pm3thv2t thruster state",
+                "pm4thv2t thruster state",
+                "aopcadse_21",
+            ]:
                 outfile.write("    %s: %s\n" % (name, reviewdata[name][-1]))
             else:
                 outfile.write("    %s: %f\n" % (name, reviewdata[name][-1]))
@@ -340,12 +478,10 @@ class LoadReviewTools(object):
         return outfile
 
     def writeChecklistData(self):
-
         reviewfilename = self.reviewschedule + "_Thermal_Load_Review_Report.txt"
         outfile = open(reviewfilename, "w")
 
         for name in self.plotorder:
-
             filename = self.propschedule + self.fileparts[name]
             propdata = self._readfile(filename, self.headerinfo[name])
 
@@ -355,14 +491,26 @@ class LoadReviewTools(object):
             datanames = self.headerinfo[name]["names"]
             datanames.pop(0)  # remove time
 
-            self._writeReportData(outfile, propdata, reviewdata, datanames, self.headerinfo[name]["title"])
-            self._writeReportData(sys.stdout, propdata, reviewdata, datanames, self.headerinfo[name]["title"])
+            self._writeReportData(
+                outfile, propdata, reviewdata, datanames, self.headerinfo[name]["title"]
+            )
+            self._writeReportData(
+                sys.stdout,
+                propdata,
+                reviewdata,
+                datanames,
+                self.headerinfo[name]["title"],
+            )
 
         outfile.close()
-        print(("Wrote thermal report data to " "%s_Thermal_Load_Review_Report.txt\n" % reviewfilename))
+        print(
+            (
+                "Wrote thermal report data to "
+                "%s_Thermal_Load_Review_Report.txt\n" % reviewfilename
+            )
+        )
 
     def writePropData(self):
-
         propfilename = self.propschedule + "_Ending_Configuration.txt"
         outfile = open(propfilename, "w")
 
@@ -391,12 +539,13 @@ def force_link(src, dest):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--Propschedule")
     parser.add_argument("--Reviewschedule")
-    parser.add_argument("--OutputPropEndingConfiguration", action="store_true", default=False)
+    parser.add_argument(
+        "--OutputPropEndingConfiguration", action="store_true", default=False
+    )
     parser.add_argument("--OutputThermalReport", action="store_true", default=False)
 
     args = vars(parser.parse_args())
@@ -405,17 +554,11 @@ if __name__ == "__main__":
         LoadReviewTools(propschedule=args["Propschedule"])
 
     if args["OutputThermalReport"]:
-        LoadReviewTools(propschedule=args["Propschedule"], reviewschedule=args["Reviewschedule"])
+        LoadReviewTools(
+            propschedule=args["Propschedule"], reviewschedule=args["Reviewschedule"]
+        )
 
     # Copy files to parent directory
     for file in glob.glob(args["Reviewschedule"] + "*"):
         # os.link(file, "../" + file)
         force_link(file, "../" + file)
-
-
-
-
-
-
-
-
