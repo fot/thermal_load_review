@@ -40,6 +40,7 @@ class LoadReviewTools(object):
             "pline04t": "_pline04t_plot.txt",
             "hrc": "_2ceahvpt_plot.txt",
             "acisfp": "_acis_fp_plot.txt",
+            "tpc_fsse": "_tpc_fsse_plot.txt"
         }
 
         self.headerinfo = {
@@ -99,6 +100,11 @@ class LoadReviewTools(object):
                 "columns": 5,
                 "names": ["Time", "AACCCDPT", "ACA0", "Pitch", "Roll"],
                 "title": "Spacecraft: Aspect Camera",
+            },
+            "tpc_fsse": {
+                "columns": 5,
+                "names": ["Time", "TPC_FSSE", "FSSE0", "Pitch", "Roll"],
+                "title": "Spacecraft: Fine Sun Sensor Electronics",
             },
             "mups": {
                 "columns": 11,
@@ -185,7 +191,7 @@ class LoadReviewTools(object):
                     "DH_Heater",
                     "ACIS_NIL_Undercover",
                     "SI",
-                    "Cold_FP",
+                    #"Cold_FP",
                     "FPTEMP_Limit",
                     "Within_Limit",
                 ],
@@ -215,6 +221,8 @@ class LoadReviewTools(object):
             "Clocking",
             "AACCCDPT",
             "ACA0",
+            "TPC_FSSE",
+            "FSSE0",
             "4RT700T",
             "4RT700T_0",
             "1DEAMZT",
@@ -262,6 +270,7 @@ class LoadReviewTools(object):
             "pline04t",
             "acisfp",
             "hrc",
+            "tpc_fsse",
         ]
 
         self.propschedule = propschedule
