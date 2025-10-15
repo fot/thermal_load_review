@@ -20,29 +20,40 @@ function generate_thermal_plots_and_reports
 %
 % Update 01/16/2023
 %
-% Added HRC CEA model, rearranged plot order
+% Added HRC CEA model
 %
 % - Matthew Dahmer
 %
-
-
+%
+% Update 08/20/2025
+%
+% Added TPC_FSSE model
+%
+% - Christian Anderson
+%
 % List of views to plot, save a png image, and then save the text data
 % and short names (for use in output filenames)
-views_to_plot = {'Thermal Model (PLINE03T)',      'pline03t'
-                 'Thermal Model (PLINE04T)',      'pline04t'
-                 'Thermal Model (MUPS)',          'mups_valves'
+views_to_plot = {'Thermal Model (MUPS)',          'mups_valves'
+                 'Thermal Model (1PDEAAT)',       '1pdeaat'
                  'Thermal Model (Central Cyl)',   'tcylaft6'
                  'Thermal Model (Fwd Bulkhead)',  '4rt700t'
+                 'Thermal Model (ACIS DPA)',      'dpa'
                  'Thermal Model (PFTANK2T)',      'pftank2t'
                  'Thermal Model (ACA)',           'aca'
-                 'Thermal Model (1PDEAAT)',       '1pdeaat'
-                 'Thermal Model (ACIS DPA)',      'dpa'
-                 'Thermal Model (ACIS DEA)',      'dea'
                  'Thermal Model (ACIS FP)',       'acis_fp'
+		         'Thermal Model (ACIS DEA)',      'dea'
+                 'Thermal Model (PLINE03T)',      'pline03t'
+                 'Thermal Model (PLINE04T)',      'pline04t'
                  'Thermal Model (HRC CEA)',       '2ceahvpt'
-};
+                 'Thermal Model (TPC_FSSE)',      'tpc_fsse'};
 
-             
+%views_to_plot = {'Thermal Model (PMxTHV1T)',      'mups_valves'
+%                 'Thermal Model (1PDEAAT)',       '1pdeaat'
+%                 'Thermal Model (-YZ)',           'tephin'
+%                 'Thermal Model (ACIS DPA)',      'dpa'
+%                 'Thermal Model (PFTANK2T)',      'pftank2t'
+%                 'Thermal Model (ACIS FP)',       'acis_fp'};
+
 % Directory to save the plot images and text files
 if (ispc)
     start_dir = '\\noodle\GRETA\mission\Backstop';
@@ -99,52 +110,48 @@ figure(h_fig);
 drawnow
 
 % Loop through all the thermal plots
-num_plots = 0;
 for i=1:length(views_to_plot)
     this_view = views_to_plot{i,1};
     this_view_short_name = views_to_plot{i,2};
     
     % Get the index of this view in the view popupmenu
     this_view_ind = strmatch(this_view,avail_views,'exact');
+    
+    % Select this view and execute the callback
+    set(handles.plotView,'value',this_view_ind);
+    disp(['Plotting ' this_view '...']);
+    eval(get(handles.plotView,'callback'));
+    drawnow;
+    
+    % I inserted a delay since the plotting can be slow and I've
+    % inadvertently snapped partial windows. - Matt
+    pause(1)
+    
+    % Save a snapshot of this plot
+    [X,map] = getscreen(h_fig);
 
-    if ~isempty(this_view_ind)
-
-        num_plots = num_plots + 1;
-
-        % Select this view and execute the callback
-        set(handles.plotView,'value',this_view_ind);
-        disp(['Plotting ' this_view '...']);
-        eval(get(handles.plotView,'callback'));
-        drawnow;
-        
-        % I inserted a delay since the plotting can be slow and I've
-        % inadvertently snapped partial windows. - Matt
-        pause(1)
-        
-        % Save a snapshot of this plot
-        [X,map] = getscreen(h_fig);
-
-        % Save the snapshot to a file
-        this_out_file = [loadname '_' this_view_short_name '.png'];
-        disp(['   Saving plot snapshot to ' this_out_file '...']);
-        if (isempty(map))
-            imwrite(X,fullfile(out_dir,this_out_file),'png');
-        else
-            imwrite(X,map,fullfile(out_dir,this_out_file),'png');
-        end
-        
-        % Save the data to a text file using plot2txt
-        this_out_file = [loadname '_' this_view_short_name '_plot.txt'];
-        disp(['   Writing data to text file ' this_out_file '...']);
-        MCC('writePlot2TextFile',fullfile(out_dir,this_out_file));
+    % Save the snapshot to a file
+    this_out_file = [loadname '_' this_view_short_name '.png'];
+    disp(['   Saving plot snapshot to ' this_out_file '...']);
+    if (isempty(map))
+        imwrite(X,fullfile(out_dir,this_out_file),'png');
+    else
+        imwrite(X,map,fullfile(out_dir,this_out_file),'png');
     end
+    
+    % Save the data to a text file using plot2txt
+    this_out_file = [loadname '_' this_view_short_name '_plot.txt'];
+    disp(['   Writing data to text file ' this_out_file '...']);
+    MCC('writePlot2TextFile',fullfile(out_dir,this_out_file));
     
 end
 
 % Let the user know we're done
 msgbox(['Finished plotting and outputting ' ...
-         num2str(num_plots) ' views.']);
+         num2str(length(views_to_plot)) ' views.']);
 
+
+     
 
 function [X,m]=getscreen(varargin)
 %GETSCREEN replacement for GETFRAME for systems with multiple monitors. Use it just like you use GETFRAME.
