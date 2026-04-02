@@ -40,7 +40,8 @@ class LoadReviewTools(object):
             "pline04t": "_pline04t_plot.txt",
             "hrc": "_2ceahvpt_plot.txt",
             "acisfp": "_acis_fp_plot.txt",
-            "tpc_fsse": "_tpc_fsse_plot.txt"
+            "tpc_fsse": "_tpc_fsse_plot.txt",
+            "tpcm_rw5": "_tpcm_rw5_plot.txt"
         }
 
         self.headerinfo = {
@@ -105,6 +106,11 @@ class LoadReviewTools(object):
                 "columns": 5,
                 "names": ["Time", "TPC_FSSE", "FSSE0", "Pitch", "Roll"],
                 "title": "Spacecraft: Fine Sun Sensor Electronics",
+            },
+            "tpcm_rw5": {
+                "columns": 5,
+                "names": ["Time", "TPCM_RW5", "RW50", "Pitch", "Roll"],
+                "title": "Spacecraft: Reaction Wheel 5 Baseplate",
             },
             "mups": {
                 "columns": 11,
@@ -223,6 +229,8 @@ class LoadReviewTools(object):
             "ACA0",
             "TPC_FSSE",
             "FSSE0",
+            "TPCM_RW5"
+            "RW50"
             "4RT700T",
             "4RT700T_0",
             "1DEAMZT",
@@ -271,6 +279,7 @@ class LoadReviewTools(object):
             "acisfp",
             "hrc",
             "tpc_fsse",
+            "tpcm_rw5"
         ]
 
         self.propschedule = propschedule
