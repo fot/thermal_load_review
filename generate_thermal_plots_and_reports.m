@@ -17,19 +17,27 @@ function generate_thermal_plots_and_reports
 %
 % - Matthew Dahmer
 %
-%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Update 01/16/2023
 %
 % Added HRC CEA model
 %
 % - Matthew Dahmer
 %
-%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Update 08/20/2025
 %
 % Added TPC_FSSE model
 %
 % - Christian Anderson
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Update 04/02/2026
+%
+% Added TPCM_RW5 model, minor bug fix to callback execution
+%
+% - Christian Anderson
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %
 % List of views to plot, save a png image, and then save the text data
 % and short names (for use in output filenames)
@@ -45,7 +53,8 @@ views_to_plot = {'Thermal Model (MUPS)',          'mups_valves'
                  'Thermal Model (PLINE03T)',      'pline03t'
                  'Thermal Model (PLINE04T)',      'pline04t'
                  'Thermal Model (HRC CEA)',       '2ceahvpt'
-                 'Thermal Model (TPC_FSSE)',      'tpc_fsse'};
+                 'Thermal Model (TPC_FSSE)',      'tpc_fsse'
+                 'Thermal Model (TPCM_RW5)'     'tpcm_rw5'};
 
 %views_to_plot = {'Thermal Model (PMxTHV1T)',      'mups_valves'
 %                 'Thermal Model (1PDEAAT)',       '1pdeaat'
@@ -120,7 +129,9 @@ for i=1:length(views_to_plot)
     % Select this view and execute the callback
     set(handles.plotView,'value',this_view_ind);
     disp(['Plotting ' this_view '...']);
-    eval(get(handles.plotView,'callback'));
+    run_callback = get(handles.plotView,'callback');
+    run_callback();
+    %eval(get(handles.plotView,'callback'));
     drawnow;
     
     % I inserted a delay since the plotting can be slow and I've
